@@ -1,5 +1,6 @@
 package com.chaudharynabin6.newsapp
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -7,12 +8,14 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 // for recycle view you need adapter
-// primary constructor of news adapter has items and listener as input
-// items contains list of string
+// primary constructor of news adapter listener as input
 // listener  contains the onClick handler on each  holder
 
 // the adapter uses the generic argument of NewsViewHolder
-class NewsAdapter(private val items: ArrayList<String>,private val listener:NewsItemListener) : RecyclerView.Adapter<NewsViewHolder>() {
+class NewsAdapter(private val listener:NewsItemListener) : RecyclerView.Adapter<NewsViewHolder>() {
+//    making items as private variable
+//    items holds all the data fetched from API
+    private  var items =  ArrayList<NewsData>()
 //    onCreateViewHolder is called on each viewHolder Instantiation
 //    parent : is viewGroup which is parent of holder
 //    newsViewHolder instance is return after adding necessary functionality on view of view holder
@@ -34,11 +37,21 @@ class NewsAdapter(private val items: ArrayList<String>,private val listener:News
 //     position is position of current item View
         val currentItem = this.items[position]
 //    setting the holder textView text with data of items from fetched data
-        holder.textView.text = currentItem
+        holder.textView.text = currentItem.title
     }
 
     override fun getItemCount(): Int {
         return this.items.size
+    }
+//    this method helps to update the fetched items list
+    @SuppressLint("NotifyDataSetChanged")
+    fun updateNews(updatedNews : ArrayList<NewsData>){
+//    clearing the previous items on list
+        this.items.clear()
+//    adding all the items fetched from API
+        this.items.addAll(updatedNews)
+//    notifying the fetched items are updated to adapter
+        this.notifyDataSetChanged()
     }
 
 
@@ -48,7 +61,7 @@ class NewsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 }
 
 interface NewsItemListener {
-    fun onClick(item: String)
+    fun onClick(item: NewsData)
 }
 
 
