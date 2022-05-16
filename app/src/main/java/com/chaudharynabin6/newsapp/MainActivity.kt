@@ -1,22 +1,25 @@
 package com.chaudharynabin6.newsapp
 
+import android.content.Context
+import android.content.pm.PackageManager
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.GridLayout.HORIZONTAL
-import android.widget.HorizontalScrollView
-import androidx.recyclerview.widget.GridLayoutManager
+import androidx.browser.customtabs.CustomTabColorSchemeParams
+import androidx.browser.customtabs.CustomTabsIntent
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.android.volley.AuthFailureError
 import com.android.volley.Request
-import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 
 class MainActivity : AppCompatActivity(), NewsItemListener {
     //    making adapter as private variable
     private lateinit var mAdapter: NewsAdapter
+
+    private var mChromePackage = "com.android.chrome";
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -89,6 +92,48 @@ class MainActivity : AppCompatActivity(), NewsItemListener {
 
     // overriding the NewsItemListener onClick method
     override fun onClick(item: NewsData) {
+        val builder = CustomTabsIntent.Builder()
 
+        // to set the toolbar color use CustomTabColorSchemeParams
+        // since CustomTabsIntent.Builder().setToolBarColor() is deprecated
+
+        val params = CustomTabColorSchemeParams.Builder()
+        params.setToolbarColor(ContextCompat.getColor(this@MainActivity, com.google.android.material.R.color.material_blue_grey_800))
+        builder.setDefaultColorSchemeParams(params.build())
+
+        // shows the title of web-page in toolbar
+        builder.setShowTitle(true)
+
+        // setShareState(CustomTabsIntent.SHARE_STATE_ON) will add a menu to share the web-page
+        builder.setShareState(CustomTabsIntent.SHARE_STATE_ON)
+
+        // To modify the close button, use
+        // builder.setCloseButtonIcon(bitmap)
+
+        // to set weather instant apps is enabled for the custom tab or not, use
+        builder.setInstantAppsEnabled(true)
+
+        //  To use animations use -
+        //  builder.setStartAnimations(this, android.R.anim.start_in_anim, android.R.anim.start_out_anim)
+        //  builder.setExitAnimations(this, android.R.anim.exit_in_anim, android.R.anim.exit_out_anim)
+        val customBuilder = builder.build()
+
+        if (this.isPackageInstalled(mChromePackage)) {
+            // if chrome is available use chrome custom tabs
+            customBuilder.intent.setPackage(mChromePackage)
+            customBuilder.launchUrl(this, Uri.parse(item.url))
+        } else {
+            // if not available use WebView to launch the url
+        }
+    }
+}
+
+fun Context.isPackageInstalled(packageName: String): Boolean {
+    // check if chrome is installed or not
+    return try {
+        packageManager.getPackageInfo(packageName, 0)
+        true
+    } catch (e: PackageManager.NameNotFoundException) {
+        false
     }
 }

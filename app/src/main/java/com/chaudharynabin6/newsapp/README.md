@@ -10,6 +10,11 @@
 
 
 # Resources
+* error handling in glide : 
 https://guides.codepath.com/android/Displaying-Images-with-the-Glide-Library
 
+* dynamically setting width and height of image : 
 https://programming.vip/docs/dynamically-set-the-width-and-height-of-the-imageview-in-horizontalscrollview.html
+
+* chrome-custom-tabs : 
+https://www.geeksforgeeks.org/chrome-custom-tabs-in-android-with-kotlin/
